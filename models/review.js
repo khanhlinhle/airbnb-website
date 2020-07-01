@@ -2,12 +2,21 @@ const mongoose = require("mongoose");
 
 const reviewSchema = new mongoose.Schema ({
     user: {
-        type: String,
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
         required: [true, "User is required"]
     },
     content: {
         type: String,
-        required: [true, "Content is required"]
+    },
+    experience: {
+        type: mongoose.Schema.ObjectId,
+        ref: "Exp",
+        required: [true, "Experience is required"]
+    },
+    rating: {
+        type: Number,
+        required: [true, "Rating is required"]
     }
 }, {
     timestamps: true

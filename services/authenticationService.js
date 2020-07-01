@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 
 exports.generateToken = async (user) => {
     const token = jwt.sign({
-        id: user._id
+        _id: user._id
     },
         process.env.SECRET,
         { expiresIn: "7d" }
@@ -23,6 +23,19 @@ exports.loginWithEmail = async (email, password) => {
 };
 
 exports.loginRequired = async (request, response, next) => {
+    // const token = request.body.token;
+    // if (!token) {
+    //     return response.status(401).json({
+    //         status: "Fail",
+    //         message: "Token is required"
+    //     });
+    // };
+    // const decode = jwt.verify(token, process.env.SECRET);
+    // const user = await User.findOne({ tokens: token, _id: decode._id });
+    // if (!user) throw new Error("Unauthorized");
+    // request.user = user;
+    // request.token = token;
+    // next();
     if (!request.headers.authorization || !request.headers.authorization.startsWith("Bearer ")) {
         return response.status(401).json({
             status: "Fail",
