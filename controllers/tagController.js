@@ -1,24 +1,19 @@
 const Tag = require("../models/tag");
+const { catchAsync } = require("./errorController");
+const { NotExtended } = require("http-errors");
+const AppError = require("../utils/appError");
 
-exports.getTagsList = async (request, response) => {
-    try {
-        const tagList = await Tag.find({});
-        response.status(200).json({
-            status: "Success",
-            data: tagList
-        });
-    } catch (error) {
-        response.status(400).json({
-            status: "Fail",
-            message: error.message
-        });
-    };
-};
+exports.getTagsList = catchAsync (async (request, response, next) => {
+    const tagList = await Tag.find({});
+    response.status(200).json({
+        status: "Success",
+        data: tagList
+    });
+});
 
-exports.createTag = async (request, response) => {
-    try {
+exports.createTag = catchAsync (async (request, response, next) => {
         const tag = request.body.tag;
-        if (!tag) throw new Error("Tag is required");
+        if (!tag) next(new AppError(400, "Param is missing"));
         const newTag = await Tag.create({
             tag: tag
         });
@@ -26,13 +21,8 @@ exports.createTag = async (request, response) => {
             status: "Success",
             data: newTag
         });
-    } catch (error) {
-        response.status(400).json({
-            status: "Fail",
-            message: error.message
-        });
-    };
-};
+   
+});
 
 // exports.createTags = async (request, response) => {
 //     try {
@@ -56,8 +46,7 @@ exports.createTag = async (request, response) => {
 //     };
 // };
 
-exports.updateTag = async (request, response) => {
-    try {
+exports.updateTag = catchAsync (async (request, response) => {
         const tag = await Tag.findByIdAndUpdate({ _id: request.params.tagId });
         if (!tag) {
             throw new Error("Undefined tag");
@@ -68,16 +57,9 @@ exports.updateTag = async (request, response) => {
             status: "Success",
             data: tag
         });
-    } catch (error) {
-        response.status(400).json({
-            status: "Fail",
-            message: error.message
-        });
-    };
-};
+});
 
-exports.deleteTag = async (request, response) => {
-    try {
+exports.deleteTag = catchAsync (async (request, response) => {
         const tag = await Tag.findByIdAndDelete({ _id: request.params.tagId });
         if (!tag) {
             throw new Error("Undefined tag");
@@ -86,10 +68,4 @@ exports.deleteTag = async (request, response) => {
             status: "Success",
             data: null
         });
-    } catch (error) {
-        response.status(400).json({
-            status: "Fail",
-            message: error.message
-        });
-    };
-};
+});

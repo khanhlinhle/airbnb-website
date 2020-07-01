@@ -1,21 +1,15 @@
 const Review = require("../models/review");
 const Exp = require("../models/experience");
+const { catchAsync } = require("./errorController");
 
-exports.getReviewList = async (request, response) => {
-    try {
+exports.getReviewList = catchAsync (async (request, response) => {
         const reviewList = await Review.find({});
         response.status(200).json({
             reviewList
         });
-    } catch (error) {
-        response.status(400).json({
-            message: error.message
-        });
-    };
-};
+});
 
-exports.createReview = async (request, response) => {
-    try {
+exports.createReview = catchAsync (async (request, response) => {
         const { rating, expId, content } = request.body;
         if (!expId || !rating) {
             return response.status(400).json({
@@ -49,15 +43,9 @@ exports.createReview = async (request, response) => {
                 message: "Already created review"
             });
         };
-    } catch (error) {
-        response.status(400).json({
-            message: error.message
-        });
-    };
-};
+});
 
-exports.updateReview = async (request, response) => {
-    try {
+exports.updateReview = catchAsync (async (request, response) => {
         const { rating, content } = request.body;
         const review = await Review.findOne({ _id: reviewId });
         review.content = content;
@@ -67,24 +55,13 @@ exports.updateReview = async (request, response) => {
             status: "Success",
             data: review
         });
-    } catch (error) {
-        response.status(400).json({
-            message: error.message
-        });
-    };
-};
+});
 
-exports.deleteReview = async (request, response) => {
-    try {
+exports.deleteReview = catchAsync (async (request, response) => {
         const review = await Review.findByIdAndDelete({ _id: request.params.reviewId });
         if (!review) throw new Error("Undefined review");
         response.status(200).json({
             status: "Success",
             data: null
         });
-    } catch (error) {
-        response.status(400).json({
-            message: error.message
-        });
-    };
-};
+});

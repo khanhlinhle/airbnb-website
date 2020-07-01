@@ -1,23 +1,17 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const { generateToken, loginWithEmail } = require("../services/authenticationService");
+const { catchAsync } = require("./errorController");
 const saltRounds = 10;
 
-exports.getUserList = async (request, response) => {
-    try {
+exports.getUserList = catchAsync (async (request, response) => {
         const userList = await User.find({});
         response.status(200).json({
             userList
         });
-    } catch (error) {
-        response.status(400).json({
-            message: error.message
-        });
-    };
-};
+});
 
-exports.createUser = async (request, response) => {
-    try {
+exports.createUser = catchAsync (async (request, response) => {
         const { name, email, password, role, introduction } = request.body;
         if (!name || !email || !password || !role) {
             return response.status(400).json({
@@ -44,15 +38,9 @@ exports.createUser = async (request, response) => {
             status: "Success",
             data: { user, token }
         });
-    } catch (error) {
-        response.status(400).json({
-            message: error.message
-        });
-    };
-};
+});
 
-exports.logIn = async (request, response, next) => {
-    try {
+exports.logIn = catchAsync (async (request, response, next) => {
         const { email, password } = request.body;
         if (!email || !password) {
             return response.status(400).json({
@@ -65,15 +53,9 @@ exports.logIn = async (request, response, next) => {
             status: "Success",
             data: { user, token }
         });
-    } catch (error) {
-        response.status(400).json({
-            message: error.message
-        });
-    };
-};
+});
 
-exports.logOut = async (request, response, next) => {
-    try {
+exports.logOut = catchAsync (async (request, response, next) => {
         const token = request.body.token;
         if (!token) {
             return response.status(400).json({
@@ -87,29 +69,17 @@ exports.logOut = async (request, response, next) => {
             status: "Success",
             data: null
         });
-    } catch (error) {
-        response.status(400).json({
-            message: error.message
-        });
-    };
-};
+});
 
-exports.getMyProfile = async (request, response) => {
-    try {
+exports.getMyProfile = catchAsync (async (request, response) => {
         const user = request.user;
         response.status(200).json({
             status: "Success",
             data: user
         });
-    } catch (error) {
-        response.status(400).json({
-            message: error.message
-        });
-    };
-};
+});
 
-exports.updateMyProfile = async (request, response) => {
-    try {
+exports.updateMyProfile = catchAsync (async (request, response) => {
         const { email, name, password, token, role, introduction } = request.body;
         if (!token) {
             return response.status(400).json({
@@ -137,9 +107,4 @@ exports.updateMyProfile = async (request, response) => {
             status: "Success",
             data: user
         });
-    } catch (error) {
-        response.status(400).json({
-            message: error.message
-        });
-    };
-};
+});

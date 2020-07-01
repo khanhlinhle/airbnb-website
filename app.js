@@ -9,7 +9,10 @@ const usersRouter = require('./routes/userRoute');
 const reviewRouter = require('./routes/reviewRoute');
 const expRouter = require('./routes/expRoute');
 const tagRouter = require('./routes/tagRoute');
+const errorRouter = require('./routes/errorRoute');
 const mongoose = require("mongoose");
+const passport = require("passport");
+const { errorHandler } = require('./controllers/errorController');
 require("dotenv").config({ path: ".env" });
 
 var app = express();
@@ -24,11 +27,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(passport.initialize());
+
 app.use('/', indexRouter);
 app.use(usersRouter);
 app.use(reviewRouter);
 app.use(expRouter);
 app.use(tagRouter);
+app.use(errorRouter);
+app.use(errorHandler);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
