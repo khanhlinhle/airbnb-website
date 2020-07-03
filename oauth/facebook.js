@@ -14,7 +14,7 @@ const facebookStrategy = new Strategy(
     function (accessToken, refreshToken, profile, next) {
         console.log(profile);
         next(null, profile);
-    }   
+    }
 );
 
 module.exports = facebookStrategy;

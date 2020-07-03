@@ -1,5 +1,4 @@
 const Exp = require("../models/experience");
-const Tag = require("../models/tag");
 const { createTags } = require("./tagController");
 const { catchAsync } = require("./errorController");
 const AppError = require("../utils/appError");
@@ -12,26 +11,28 @@ exports.getExperienceList = catchAsync(async (request, response) => {
     });
 });
 
-exports.createExperience = catchAsync(async (request, response) => {
+exports.createExperience = catchAsync(async (request, response, next) => {
     const user = request.user;
-    const { title, description } = request.body;
-    if (!title || !description)
-        return res.status(400).json({
+    const { title, duration, groupSize, description, images, items, price, tags, country, city } = request.body;
+    if (!title || !description || !duration || !groupSize || !images || !items || !price || !tags || !country || !city)
+        return response.status(400).json({
             status: "fail",
-            error: "Title and description are required "
+            error: "Missing required info "
         });
-    // const tagObj = await createTags(tags);
+    const tagObj = await createTags(request, response);
     const newExperience = await Exp.create({
         title: title,
-        // duration,
-        // groupSize,
-        // images,
+        duration: duration,
+        groupSize: groupSize,
+        images: images,
         description: description,
-        // items,
-        // price,
-        // tags: tagObj,
+        items: items,
+        price: price,
+        tags: tagObj,
         host: user._id,
-        // country,
+        country: country,
+        city: city,
+        tags: tagObj
     });
     response.status(200).json({
         status: "Success",

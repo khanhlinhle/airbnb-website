@@ -13,31 +13,40 @@ const expSchema = new mongoose.Schema({
     },
     duration: {
         type: Number,
+        required: [true, "Duration is required"]
     },
     groupSize: {
-        type: Number
+        type: Number,
+        required: [true, "Group size is required"]
     },
     images: [{
-        type: [String]
+        type: [String],
+        required: [true, "Images are required"]
     }],
     description: {
         type: String,
         required: [true, "Description is required"]
     },
     items: [{
-        type: [String]
+        type: [String],
+        required: [true, "At least 1 item is needed"]
     }],
     price: {
-        type: Number
+        type: Number,
+        required: [true, "Price is required"]
     },
-    // tags: [{
-    //     type: mongoose.Schema.ObjectId,
-    //     ref: "Tag",
-    //     required: [true, "At least 1 tag is needed"]
-    // }],
+    tags: [{
+        type: mongoose.Schema.ObjectId,
+        ref: "Tag",
+        required: [true, "At least 1 tag is needed"]
+    }],
+    city: {
+        type: String,
+        required: [true, "City is required"]
+    },
     country: {
-        city: { type: String },
-        country: { type: String },
+        type: String,
+        required: [true, "Country is required"]
     }
 }, {
     timestamps: true
