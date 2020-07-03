@@ -5,7 +5,7 @@ const { loginFacebook, facebookAuthHandler, loginGoogle, googleAuthHandler } = r
 const { createHeaders } = require('./../services/authenticationService')
 var router = express.Router();
 
-router.route("/users").get(getUserList).post(createHeaders, createUser);
+router.route("/users").get(getUserList).post(createUser);
 router.route("/users/me").get(loginRequired, getMyProfile).put(loginRequired, updateMyProfile);
 
 router.route("/auth/login").post(logIn);
