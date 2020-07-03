@@ -2,9 +2,10 @@ var express = require('express');
 const { getUserList, createUser, logIn, logOut, getMyProfile, updateMyProfile } = require('../controllers/userController');
 const { loginRequired } = require('../services/authenticationService');
 const { loginFacebook, facebookAuthHandler, loginGoogle, googleAuthHandler } = require('../controllers/authController');
+const { createHeaders } = require('./../services/authenticationService')
 var router = express.Router();
 
-router.route("/users").get(getUserList).post(createUser);
+router.route("/users").get(getUserList).post(createHeaders, createUser);
 router.route("/users/me").get(loginRequired, getMyProfile).put(loginRequired, updateMyProfile);
 
 router.route("/auth/login").post(logIn);
