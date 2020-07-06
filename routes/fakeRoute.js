@@ -1,9 +1,12 @@
 var express = require('express');
-const { createExperience } = require('../controllers/expController');
-const { createFakeExperience } = require('../controllers/fakeController');
+const { getFakeExperiences, createFakeExperience, createFakeUser, getFakeUsers } = require('../controllers/fakeController');
 var router = express.Router();
 
 router.route("/experiences/fake")
+    .get(getFakeExperiences)
     .post(createFakeExperience);
 
+router.route("/users/fake")
+    .get(getFakeUsers)
+    .post(createFakeUser);
 module.exports = router;
