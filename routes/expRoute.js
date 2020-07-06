@@ -4,11 +4,11 @@ const { hostRequired, loginRequired } = require('../services/authenticationServi
 var router = express.Router();
 
 router.route("/experiences")
-.get(getExperienceList)
-.post(loginRequired, hostRequired, createExperience);
-router.route("/experiences/:experienceId")
-.get(findExperience)
-.put(loginRequired, hostRequired, updateExperience)
-.delete(loginRequired, hostRequired, deleteExperience);
+    .get(getExperienceList)
+    .post(loginRequired, hostRequired, createExperience);
+router.route("/experiences/:experienceId/edit")
+    .get(findExperience)
+    .put(loginRequired, hostRequired, updateExperience)
+    .delete(loginRequired, hostRequired, deleteExperience);
 
 module.exports = router;
