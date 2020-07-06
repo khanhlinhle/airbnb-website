@@ -2,17 +2,6 @@ const faker = require("faker");
 const { catchAsync } = require("./errorController");
 const Exp = require("../models/experience");
 const User = require("../models/user");
-const PAGE_SIZE = 25;
-
-exports.getFakeExperiences = catchAsync(async (request, response) => {
-    const pageNum = request.query.page || 1;
-    const numToSkip = (parseInt(pageNum) - 1) * PAGE_SIZE;
-    const fakeExperiences = new Exp.find({}).limit(PAGE_SIZE).skip(numToSkip);
-    response.status(200).json({
-        status: "Success",
-        data: fakeExperiences
-    });
-});
 
 exports.getFakeUsers = catchAsync(async (request, response) => {
     const fakeUsers = new User.find({}).limit(20);
@@ -24,7 +13,9 @@ exports.getFakeUsers = catchAsync(async (request, response) => {
 
 exports.createFakeExperience = catchAsync(async (request, response, next) => {
     const hostList = await User.find({ role: "Host" })
+    // let hostListIndex = Math.floor(Math.random() * hostList.length) == 0 ? 0 : Math.floor(Math.random() * hostList.length) - 1
     for (i = 0; i < 10; i++) {
+        let hostListIndex = Math.floor(Math.random() * (hostList.length - 1)) + 1;
         const fakeExperience = await Exp.create({
             title: faker.lorem.sentence(),
             duration: Math.floor(Math.random() * 12) + 1,
@@ -35,7 +26,7 @@ exports.createFakeExperience = catchAsync(async (request, response, next) => {
             city: faker.address.city(),
             description: faker.lorem.paragraphs(),
             items: faker.lorem.sentence(),
-            host: hostList[Math.floor(Math.random() * hostList.length) + 1]._id
+            host: hostList[hostListIndex]._id
         });
     };
     response.send("OK");
@@ -44,7 +35,7 @@ exports.createFakeExperience = catchAsync(async (request, response, next) => {
 
 exports.createFakeUser = catchAsync(async (request, response, next) => {
     let role = ["Normal", "Host"];
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 100; i++) {
         const fakeUser = await User.create({
             email: faker.internet.email(),
             password: faker.random.word(),

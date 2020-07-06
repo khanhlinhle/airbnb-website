@@ -2,12 +2,17 @@ const Exp = require("../models/experience");
 const { createTags } = require("./tagController");
 const { catchAsync } = require("./errorController");
 const AppError = require("../utils/appError");
+const PAGE_SIZE = 25;
 
 exports.getExperienceList = catchAsync(async (request, response) => {
-    const experienceList = await Exp.find({});
+    console.log("1")
+    const pageNum = request.query.page || 1;
+    const numToSkip = (parseInt(pageNum) - 1) * PAGE_SIZE;
+    const fakeExperiences = await Exp.find({}).limit(PAGE_SIZE).skip(numToSkip);
+    const count = await Exp.find().countDocuments();
     response.status(200).json({
         status: "Success",
-        data: experienceList
+        data: { fakeExperiences, count, page: pageNum * 1 }
     });
 });
 
