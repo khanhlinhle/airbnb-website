@@ -9,41 +9,33 @@ exports.getExperienceList = catchAsync(async (request, response) => {
     const minPrice = parseInt(request.query.minPrice) || 1;
     const maxPrice = parseInt(request.query.maxPrice) || 1000;
     const numToSkip = (parseInt(pageNum) - 1) * PAGE_SIZE;
-    const tags = request.query.tags;
+    const tags = { tags: request.query.tags } || {};
+
     // const minRating = parseInt(request.query.rating) || 1;
     // const maxRating = parseInt(request.query.rating) || 5;
-    const rating = request.query.rating;
-
-    // console.log(tags, " ", minPrice, " ", maxPrice);
-    console.log(rating)
+    const rating = request.query.rating || 0;
 
     const fakeExperiences = await Exp.find({
-        price: {
-            $gte: minPrice, $lte: maxPrice
-        },
-        tags,
-        // rating: {
-        //     $gte: minRating, $lte: maxRating
-        // }
-        rating
+        $and: [{
+            price: {
+                $gte: minPrice, $lte: maxPrice
+            }
+        }, tags, { rating: { $gte: rating } }]
     }).limit(PAGE_SIZE).skip(numToSkip)
         .sort({ price: 1 });
     const count = await Exp.find().countDocuments({
-        price: {
-            $gte: minPrice, $lte: maxPrice
-        },
-        tags,
-        // rating: {
-        //     $gte: minRating, $lte: maxRating
-        // }
-        rating
+        $and: [{
+            price: {
+                $gte: minPrice, $lte: maxPrice
+            }
+        }, tags, { rating: { $gte: rating } }]
     });
 
     // console.log(fakeExperiences[0]);
 
     response.status(200).json({
         status: "Success",
-        data: { fakeExperiences, count, page: pageNum * 1, perPage: PAGE_SIZE, tags, rating }
+        data: { fakeExperiences, count, page: pageNum * 1, perPage: PAGE_SIZE }
     });
 });
 
@@ -77,7 +69,7 @@ exports.createExperience = catchAsync(async (request, response, next) => {
 });
 
 exports.findExperience = catchAsync(async (request, response) => {
-    const exp = await (await Exp.findOne({ _id: request.params.experienceId }).populate("tags").populated("host"));
+    const exp = await (await Exp.findOne({ _id: request.params.experienceId })).populate("tags", "tag").populate("host", "name");
     if (!exp) throw new Error("Undefined experience");
     response.status(200).json({
         status: "Success",
