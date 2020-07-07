@@ -47,6 +47,10 @@ const expSchema = new mongoose.Schema({
     country: {
         type: String,
         required: [true, "Country is required"]
+    },
+    rating: {
+        type: Number,
+        required: [true, "Rating is required"]
     }
 }, {
     timestamps: true

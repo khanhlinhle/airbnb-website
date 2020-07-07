@@ -2,32 +2,42 @@ const faker = require("faker");
 const { catchAsync } = require("./errorController");
 const Exp = require("../models/experience");
 const User = require("../models/user");
-
-exports.getFakeUsers = catchAsync(async (request, response) => {
-    const fakeUsers = new User.find({}).limit(20);
-    response.status(200).json({
-        status: "Success",
-        data: fakeUsers
-    });
-});
+const Tag = require("../models/tag");
 
 exports.createFakeExperience = catchAsync(async (request, response, next) => {
+    const tagList = [
+        "Animals", "Entertainment", "Music", "Cooking", "Baking", "Dance", "Drinks", "Arts & Writing", "Family", "Magic", "Fitness", "Wellness", "History & Culture", "Meditation"
+    ];
+
     const hostList = await User.find({ role: "Host" })
-    // let hostListIndex = Math.floor(Math.random() * hostList.length) == 0 ? 0 : Math.floor(Math.random() * hostList.length) - 1
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 150; i++) {
         let hostListIndex = Math.floor(Math.random() * (hostList.length - 1)) + 1;
-        const fakeExperience = await Exp.create({
+        const fakeExperience = new Exp({
             title: faker.lorem.sentence(),
             duration: Math.floor(Math.random() * 12) + 1,
-            groupSize: faker.random.number(),
-            images: faker.image.image(),
+            groupSize: Math.floor(Math.random() * 100) + 1,
+            images: faker.image.images(),
             price: Math.floor(Math.random() * 1000) + 1,
             country: faker.address.country(),
             city: faker.address.city(),
             description: faker.lorem.paragraphs(),
             items: faker.lorem.sentence(),
-            host: hostList[hostListIndex]._id
+            host: hostList[hostListIndex]._id,
+            tags: [],
+            rating: Math.floor(Math.random() * 5) + 1,
         });
+        let randomTagCount = Math.floor(Math.random() * 5) + 1;
+        for (let i = 1; i <= randomTagCount; i++) {
+            let randomTagsIndex = Math.floor(Math.random() * 14);
+
+            let tagObj = await Tag.findOne({ tag: tagList[randomTagsIndex] });
+            if (!tagObj) {
+                tagObj = await Tag.create({ tag: tagList[randomTagsIndex] });
+            };
+
+            fakeExperience.tags.push(tagObj);
+        };
+        await fakeExperience.save()
     };
     response.send("OK");
 }

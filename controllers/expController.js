@@ -5,14 +5,45 @@ const AppError = require("../utils/appError");
 const PAGE_SIZE = 25;
 
 exports.getExperienceList = catchAsync(async (request, response) => {
-    console.log("1")
     const pageNum = request.query.page || 1;
+    const minPrice = parseInt(request.query.minPrice) || 1;
+    const maxPrice = parseInt(request.query.maxPrice) || 1000;
     const numToSkip = (parseInt(pageNum) - 1) * PAGE_SIZE;
-    const fakeExperiences = await Exp.find({}).limit(PAGE_SIZE).skip(numToSkip);
-    const count = await Exp.find().countDocuments();
+    const tags = request.query.tags;
+    // const minRating = parseInt(request.query.rating) || 1;
+    // const maxRating = parseInt(request.query.rating) || 5;
+    const rating = request.query.rating;
+
+    // console.log(tags, " ", minPrice, " ", maxPrice);
+    console.log(rating)
+
+    const fakeExperiences = await Exp.find({
+        price: {
+            $gte: minPrice, $lte: maxPrice
+        },
+        tags,
+        // rating: {
+        //     $gte: minRating, $lte: maxRating
+        // }
+        rating
+    }).limit(PAGE_SIZE).skip(numToSkip)
+        .sort({ price: 1 });
+    const count = await Exp.find().countDocuments({
+        price: {
+            $gte: minPrice, $lte: maxPrice
+        },
+        tags,
+        // rating: {
+        //     $gte: minRating, $lte: maxRating
+        // }
+        rating
+    });
+
+    // console.log(fakeExperiences[0]);
+
     response.status(200).json({
         status: "Success",
-        data: { fakeExperiences, count, page: pageNum * 1 }
+        data: { fakeExperiences, count, page: pageNum * 1, perPage: PAGE_SIZE, tags, rating }
     });
 });
 
@@ -46,7 +77,7 @@ exports.createExperience = catchAsync(async (request, response, next) => {
 });
 
 exports.findExperience = catchAsync(async (request, response) => {
-    const exp = await Exp.findOne({ _id: request.params.experienceId });
+    const exp = await (await Exp.findOne({ _id: request.params.experienceId }).populate("tags").populated("host"));
     if (!exp) throw new Error("Undefined experience");
     response.status(200).json({
         status: "Success",

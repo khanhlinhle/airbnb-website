@@ -5,9 +5,10 @@ const { catchAsync } = require("./errorController");
 const saltRounds = 10;
 
 exports.getUserList = catchAsync(async (request, response) => {
-    const userList = await User.find({});
+    const fakeUsers = await User.find({}).limit(20);
     response.status(200).json({
-        userList
+        status: "Success",
+        data: fakeUsers
     });
 });
 
