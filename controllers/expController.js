@@ -9,7 +9,7 @@ exports.getExperienceList = catchAsync(async (request, response) => {
     const minPrice = parseInt(request.query.minPrice) || 1;
     const maxPrice = parseInt(request.query.maxPrice) || 1000;
     const numToSkip = (parseInt(pageNum) - 1) * PAGE_SIZE;
-    const tags = { tags: request.query.tags } || {};
+    // const tags = { tags: request.query.tags } || {};
 
     // const minRating = parseInt(request.query.rating) || 1;
     // const maxRating = parseInt(request.query.rating) || 5;
@@ -20,7 +20,7 @@ exports.getExperienceList = catchAsync(async (request, response) => {
             price: {
                 $gte: minPrice, $lte: maxPrice
             }
-        }, tags, { rating: { $gte: rating } }]
+        }, { rating: { $gte: rating } }]
     }).limit(PAGE_SIZE).skip(numToSkip)
         .sort({ price: 1 });
     const count = await Exp.find().countDocuments({
@@ -28,10 +28,8 @@ exports.getExperienceList = catchAsync(async (request, response) => {
             price: {
                 $gte: minPrice, $lte: maxPrice
             }
-        }, tags, { rating: { $gte: rating } }]
+        }, { rating: { $gte: rating } }]
     });
-
-    // console.log(fakeExperiences[0]);
 
     response.status(200).json({
         status: "Success",
